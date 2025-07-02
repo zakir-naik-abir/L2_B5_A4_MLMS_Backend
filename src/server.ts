@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import config from "./config";
 import bookRoute from "./modules/book/book.route";
+import borrowRoute from "./modules/borrow/borrow.route";
 
 const app: Application = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // routes
 app.use('/', bookRoute);
+app.use('/', borrowRoute);
 
 
 // server
