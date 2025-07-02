@@ -2,12 +2,16 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import config from "./config";
+import bookRoute from "./modules/book/book.route";
 
 const app: Application = express();
 
 // middlewares
 app.use(cors());
 app.use(express.json());
+
+// routes
+app.use('/', bookRoute);
 
 
 // server
