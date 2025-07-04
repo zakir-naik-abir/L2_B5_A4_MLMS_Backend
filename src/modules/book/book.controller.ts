@@ -1,108 +1,104 @@
 import { Request, Response } from "express";
-import { Book } from "./book.model";
+import { BookService } from "./book.service";
 
 // create book
-const createBook = async(req: Request, res: Response) =>{
+const createBook = async (req: Request, res: Response) => {
   try {
-    const query = req.body;
-    const book = new Book(query);
-    const data = await book.save();
+    const result = await BookService.addBook(req.body);
 
-    res.send({
+    res.status(201).json({
       success: true,
-      message: "Book created Successfully",
-      data
-    })
+      message: "Book created Successfully!",
+      data: result,
+    });
   } catch (error) {
-    res.send({
+    res.status(500).json({
       success: false,
-      message: "Error",
+      message: "Failed to create book",
       error,
-    })
+    });
   }
 };
 
 // get all book
-const getAllBook = async(req: Request, res: Response) =>{
+const getAllBooks = async (req: Request, res: Response) => {
   try {
-    const { filter, sortBy = "createAt", sort = "desc" } = req.query;
-    const books = await Book.find(filter ? { genre: filter} : {}).sort({ [sortBy as string] : sort === "asc" ? 1 : -1});
+    const result = await BookService.getBooks();
 
-    res.send({
+    res.status(200).json({
       success: true,
-      message: "Book retrieved successfully",
-      books
-    })
-  } catch (error) {
-    res.send({
-      success: false,
-      message: 'Error',
-      error,
+      message: "Book retrieved successfully!",
+      data: result,
     });
-  };
-};
-
-// get book byId
-const getBookById = async(req: Request, res: Response) => {
-  try {
-    const bookId = req.params.bookId;
-    const data = await Book.findById(bookId);
-
-    res.send({
-      success: true,
-      message: "Book retrieved successfully",
-      data,
-    })
   } catch (error) {
-    res.send({
-      success: true,
-      message: "Error",
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve books",
       error,
     });
   }
-}
+};
+
+// get book byId
+const getBookById = async (req: Request, res: Response) => {
+  try {
+    const result = await BookService.getSingleBook(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: "Book retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: true,
+      message: "Failed to retrieve book",
+      error,
+    });
+  }
+};
 
 // update book
 const updateBook = async (req: Request, res: Response) => {
   try {
-    const bookId = req.params.bookId;
-    const data = await Book.findByIdAndUpdate(bookId, req.body, {new: true});
+    const result = await BookService.updateSingleBook(req.params.id, req.body);
 
-    res.send({
+    res.status(200).json({
       success: true,
       message: "Book updated successfully",
-      data,
-    })
+      data: result,
+    });
   } catch (error) {
-    res.send({
+    res.status(500).json({
       success: true,
-      message: "Error",
+      message: "Failed to update book",
       error,
     });
   }
 };
 
 // delete book
-const deleteBook = async(req: Request, res: Response) =>{
+const deleteBook = async (req: Request, res: Response) => {
   try {
-    const bookId = req.params.bookId;
-    const data = await Book.findByIdAndDelete(bookId);
+    await BookService.deleteSingleBook(req.params.id);
 
-    res.send({
+    res.status(200).json({
       success: true,
-      message: "Book deleted successfully",
+      message: "Book deleted successfully!",
       data: null,
     });
   } catch (error) {
-    res.send({
+    res.status(500).json({
       success: true,
-      message: "Error",
+      message: "Failed to delete book",
       error,
     });
   }
 };
 
-
-export const bookController = {
-  createBook, getAllBook, getBookById, updateBook, deleteBook
+export const BookController = {
+  createBook,
+  getAllBooks,
+  getBookById,
+  updateBook,
+  deleteBook,
 };

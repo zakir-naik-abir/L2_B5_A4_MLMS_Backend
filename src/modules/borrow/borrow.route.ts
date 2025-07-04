@@ -1,9 +1,12 @@
 import { RequestHandler, Router } from "express";
-import { borrowController } from "./borrow.controller";
+import { BorrowController } from "./borrow.controller";
 
 const borrowRoute = Router();
 
-borrowRoute.post("/borrow", borrowController.borrowBook as RequestHandler);
-borrowRoute.get("/borrow", borrowController.getBorrowSummary as RequestHandler);
+borrowRoute.post("/borrow", BorrowController.borrowBook as RequestHandler);
+borrowRoute.get(
+  "/borrow-summary",
+  BorrowController.getBorrowSummary as RequestHandler
+);
 
 export default borrowRoute;

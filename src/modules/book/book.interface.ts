@@ -1,19 +1,9 @@
-
 export interface IBook {
   title: string;
   author: string;
-  genre: Genre;
+  genre: string;
   isbn: string;
   description: string;
   copies: number;
-  availableCopies?: boolean;
-  updateAvailability(): void;
+  available?: boolean;
 }
-
-export type Genre = 
-  | "FICTION"
-  | "NON_FICTION"
-  | "SCIENCE"
-  | "HISTORY"
-  | "BIOGRAPHY"
-  | "FANTASY";

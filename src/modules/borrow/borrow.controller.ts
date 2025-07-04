@@ -2,70 +2,55 @@ import { NextFunction, Request, Response } from "express";
 import { Book } from "../book/book.model";
 import { Borrow } from "./borrow.model";
 import { title } from "process";
+import { BorrowService } from "./borrow.service";
 
 // borrow book
-const borrowBook = async(req: Request, res: Response, next: NextFunction) =>{
+const borrowBook = async (req: Request, res: Response) => {
   try {
-    const { book: bookId, quantity } = req.body;
-    const book = await Book.findById(bookId);
+    // const { book: bookId, quantity } = req.body;
+    // const book = await Book.findById(bookId);
 
-    if(!book || book.copies < quantity){
-      return res.send({
-        success: false,
-        message: "Unavailable Book"
-      });
-    };
-    const borrow = await Borrow.create(req.body);
+    // if(!book || book.copies < quantity){
+    //   return res.send({
+    //     success: false,
+    //     message: "Unavailable Book"
+    //   });
+    // };
 
-    res.send({
+    // const borrow = await Borrow.create(req.body);
+
+    const result = await BorrowService.borrowBook(req.body);
+
+    res.status(201).json({
       success: true,
-      message: "Book borrowed successfully",
-      borrow,
-    })
-  } catch (error) {
-    next(error);
+      message: "Book borrowed successfully!",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed borrow book",
+    });
   }
 };
 
 // borrow book summary
-const getBorrowSummary = async(req: Request, res: Response) =>{
+const getBorrowSummary = async (req: Request, res: Response) => {
   try {
-    const summary = await Borrow.aggregate([
-      {
-        $group: {
-          _id: "$book",
-          totalQuantity: { $sum: "$quantity" },
-        },
-      },
-      {
-        $lookup: {
-          from: "books",
-          localField: "_id",
-          foreignField: "_id",
-          as: "book",
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          book: { title: "$book.title", isbn: "$book.isbn" },
-          totalQuantity: 1,
-        }
-      },
-    ]);
+    const result = await BorrowService.getBorrowSummary();
 
-    res.send({
+    res.status(200).json({
       success: true,
-      message: "Borrowed books summary retrieved successfully",
-      summary,
-    })
+      message: "Borrowed books summary retrieved successfully!",
+      data: result,
+    });
   } catch (error) {
-    res.send({
-      success: true,
-      message: "Error",
+    res.status(500).send({
+      success: false,
+      message: "Failed to retrieve summary",
       error,
     });
   }
-}
+};
 
-export const borrowController = { borrowBook, getBorrowSummary }
+export const BorrowController = { borrowBook, getBorrowSummary };
