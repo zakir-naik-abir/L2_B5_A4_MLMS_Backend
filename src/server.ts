@@ -8,13 +8,21 @@ import borrowRoute from "./modules/borrow/borrow.route";
 const app: Application = express();
 
 // middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://l2b5a4frontend.vercel.app",
+      "http://localhost:5173",
+      "https://l2b5a4frontend-9bbb587mw-zakir-naiks-projects.vercel.app",
+      "http://localhost:5177",
+    ],
+  })
+);
 app.use(express.json());
 
 // routes
-app.use('/', bookRoute);
-app.use('/', borrowRoute);
-
+app.use("/", bookRoute);
+app.use("/", borrowRoute);
 
 // server
 app.get("/", (req, res) => {

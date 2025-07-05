@@ -15,7 +15,7 @@ const borrowBook = async (payload: IBorrow): Promise<IBorrow> => {
     book.available = false;
   }
   await book.save();
-  const result = await Borrow.create(payload);
+  const result = await Borrow.create(payload );
   return result;
 };
 
